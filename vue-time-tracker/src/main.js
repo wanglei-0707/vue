@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
-import VueResource from 'vue-resource'
+// import VueResource from 'vue-resource'
 import Home from './components/Home'
 import TimeEntries from './components/TimeEntries'
 // import LogTime from './components/LogTime'
@@ -11,7 +11,7 @@ import store from './store'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 Vue.use(VueRouter)
-Vue.use(VueResource)
+// Vue.use(VueResource)
 
 const router = new VueRouter({
     routes: [
