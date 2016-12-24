@@ -8,21 +8,23 @@
                 <th>状态</th>
                 <th>
                     操作
-                    <router-link to="/">+ 新建问卷</a>
+                    <router-link to="/new" class="new-questionnaire-btn link">+ 新建问卷</router-link>
                 </th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="item in questionnaireList">
-                <td class="checkbox-td"><input type="checkbox" value="{{item.id}}" v-model="checkedList" @click="allChecked(item.id)" v-show="item.status === '未发布' ? true : false"></td>
+            <tr v-for="(item, index) in questionnaireList">
+                <td class="checkbox-td">
+                    <input type="checkbox" :value="item.id" v-model="checkedList" @click="checkOne(item.id)" v-show="item.status === '未发布' ? true : false">
+                </td>
                 <td>{{item.title}}</td>
                 <td>{{item.time}}</td>
                 <td :class="{inpublish:item.status === '发布中', finished: item.status === '已结束'}">{{item.status}}</td>
                 <td>
-                    <a class="operators-btn" v-show="item.status === '未发布'" @click="editQuestionnaire(item)">编辑</a>
-                    <a class="operators-btn" v-show="item.status === '未发布'" @click="deleteMethod(item)">删除</a>
-                    <a class="operators-btn" v-show="item.status !== '未发布'" v-link="{name: 'checkData', params: {questionnaireId: parseInt(item.id)}}">查看数据</a>
-                    <a class="operators-btn" v-link="{name: 'view', params: {questionnaireId: parseInt(item.id)}}">查看问卷</a>
+                    <router-link :to="{name: 'edit', params: {id: item.id}}" class="operators-btn" v-show="item.status === '未发布'">编辑</router-link>
+                    <a class="operators-btn" v-show="item.status === '未发布'" @click="deleteShowMask(item)">删除</a>
+                    <router-link :to="{name: 'view', params: {id: item.id}}" class="operators-btn">查看问卷</router-link>
+                    <router-link :to="{name: 'check', params: {id: item.id}}" class="operators-btn" v-show="item.status !== '未发布'">查看数据</router-link>
                 </td>
             </tr>
             <tr>
@@ -32,42 +34,96 @@
                 </td>
             </tr>
         </tbody>
+        <MaskLayer v-if="maskShow" message="确定删除问卷？" @confirm-event="deleteQuestionnaire(delQuestionnaire)" @hide-event="maskShow = false"></MaskLayer>
     </table>
     <div v-else>
-        <router-link to="/" class="newnaire-btn">+ 新建问卷</router-link>
+        <router-link to="/new" class="newnaire-btn">+ 新建问卷</router-link>
     </div>
 </template>
 
 <script>
+    import MaskLayer from './Mask'
     export default {
         name: 'List',
+        data () {
+            return {
+                maskShow: false,
+                delQuestionnair: {},
+                checkedList: [],
+                checkboxAll: false
+            }
+        },
         computed: {
             questionnaireList () {
                 return this.$store.state.questionnaireList
+            },
+            unpublished () {
+                var result = []
+                for (var i in this.questionnaireList) {
+                    if (this.questionnaireList[i].status === '未发布') {
+                        result.push(this.questionnaireList[i].id)
+                    }
+                }
+                return result
             }
         },
+        components: {
+            MaskLayer
+        },
         methods: {
-            allchecked () {
-                return false;
-            },
-            editQuestionnaire () {
-                return true;
-            },
-            deleteMethod () {
-                return true;
+            checkOne (id) {
+                for (var i in this.checkedList) {
+                    if (id === this.checkedList[i]) {
+                        this.checkedList.splice(i, 1)
+                        this.checkboxAll = false
+                        return
+                    }
+                }
+                this.checkedList.push(id)
+                if (this.checkedList.length === this.unpublished.length) {
+                    this.checkboxAll = true
+                }
             },
             checkAll () {
-                return true;
+                this.checkedList = []
+                if (!this.checkboxAll) {
+                    for (var i in this.unpublished) {
+                        this.checkedList.push(this.unpublished[i])
+                    }
+                    this.checkboxAll = true
+                } else {
+                    this.checkboxAll = false
+                }
+            },
+            deleteShowMask (item) {
+                this.maskShow = true
+                this.delQuestionnaire = item
+            },
+            deleteQuestionnaire (item) {
+                console.log(item.id)
+                this.$store.dispatch('delQuestionnaire', item.id)
+                this.maskShow = false
+            },
+            hide () {
+                console.log('ddddd')
+                this.maskShow = false
             },
             deleteChecked () {
-                return true;
+                var self = this
+                for (var i = this.checkedList.length; i >= 0; i--) {
+                    self.$store.dispatch('delQuestionnaire', this.checkedList[i])
+                    this.checkedList.splice(i, 1)
+                    if (this.checkedList.length === 0) {
+                        this.checkboxAll = false
+                    }
+                }
             }
         }
     }
 </script>
 
 <style>
-    a.newnaire-btn{
+    .newnaire-btn{
         display: block;
         width:9em;
         height:2em;
@@ -115,7 +171,7 @@
     tr button.deletechecked{
         margin-left:10px;
     }
-    a.new-questionnaire-btn{
+    .new-questionnaire-btn{
         width:100px;
         height:20px;
         line-height: 20px;
@@ -128,7 +184,7 @@
         text-decoration: none;
         margin-right:30px;
     }
-    tbody a.operators-btn{
+    .operators-btn{
         width:5em;
         height:20px;
         line-height: 20px;
@@ -143,7 +199,7 @@
         text-align: center;
         cursor: pointer;
     }
-    tbody a:hover, tbody a:active{
+    tbody .link:hover, tbody .link:active{
         background:rgb(247, 120, 2);
         color:#fff;
     }

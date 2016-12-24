@@ -16,7 +16,7 @@ const state = {
         {
             id: '1',
             title: '这是我的第一份问卷',
-            time: '2016-04-12 20:46:52',
+            time: '2016-04-92 20:46:52',
             status: '未发布',
             questions: [
                 {
@@ -125,12 +125,41 @@ const state = {
                     'picked': []
                 }
             ]
+        },
+        {
+            id: '4',
+            title: '这是我的第一份问卷',
+            time: '2016-04-12 20:46:52',
+            status: '未发布',
+            questions: [
+                {
+                    'title': '你喜欢什么运动？',
+                    'type': '1',
+                    'must': true,
+                    'options': [
+                        {text: '足球', num: 8},
+                        {text: '排球', num: 12},
+                        {text: '篮球', num: 3},
+                        {text: '羽毛球', num: 5}
+                    ],
+                    'picked': []
+                },
+                {
+                    'title': '你喜欢排球吗？为什么？',
+                    'type': '2',
+                    'must': false,
+                    'options': [
+                        {text: '', num: 2}
+                    ],
+                    'picked': ''
+                }
+            ]
         }
     ],
     activeQuestionnaire: {}
 }
 
-export default new Vuex.store({
+export default new Vuex.Store({
     state,
     mutations,
     actions
