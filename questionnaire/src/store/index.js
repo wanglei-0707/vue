@@ -16,7 +16,7 @@ const state = {
         {
             id: '1',
             title: '这是我的第一份问卷',
-            time: '2016-04-92 20:46:52',
+            time: '2016-04-92',
             status: '未发布',
             questions: [
                 {
@@ -45,7 +45,7 @@ const state = {
         {
             id: '2',
             title: '这是我的第二份问卷',
-            time: '2016-04-12 20:46:52',
+            time: '2016-04-12',
             status: '发布中',
             questions: [
                 {
@@ -98,7 +98,7 @@ const state = {
         {
             id: '3',
             title: '这是我的第三份问卷',
-            time: '2016-04-12 20:46:52',
+            time: '2016-04-12',
             status: '已结束',
             questions: [
                 {
@@ -128,8 +128,8 @@ const state = {
         },
         {
             id: '4',
-            title: '这是我的第一份问卷',
-            time: '2016-04-12 20:46:52',
+            title: '这是我的第四份问卷',
+            time: '2016-04-12',
             status: '未发布',
             questions: [
                 {

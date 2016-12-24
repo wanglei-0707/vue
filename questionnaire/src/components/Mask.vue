@@ -22,7 +22,7 @@
     export default {
         name: 'MaskLayer',
         props: [
-            'maskShow', 'message'
+            'message'
         ],
         methods: {
             confirm () {
