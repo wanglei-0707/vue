@@ -140,6 +140,7 @@
             saveQues () {
                 if (this.quesList.length < 1) {
                     window.alert('问卷不能为空，至少含有一个问题！')
+                    this.maskShow = false
                     return
                 } else if (!this.time) {
                     window.alert('请选择日期')
@@ -162,6 +163,8 @@
                 }
                 if (!this.time) {
                     window.alert('请选择日期')
+                    this.maskShow = false
+                    return
                 }
                 // this.questionnaire.time = this.Format(this.time, 'yyyy-MM-DD hh-mm-ss')
                 this.questionnaire.time = this.time
@@ -169,11 +172,14 @@
                     if (this.$store.state.questionnaireList[i].id === this.questionnaire.id) {
                         this.questionnaire.status = '发布中'
                         this.$store.dispatch('saveQuestionnaire', this.questionnaire)
+                        this.maskShow = false
+                        window.alert('问卷发布成功')
                         return
                     }
                 }
                 this.questionnaire.status = '发布中'
                 this.$store.dispatch('addQuestionnaire', this.questionnaire)
+                window.alert('问卷发布成功')
                 this.$router.push('/list')
             }
         }

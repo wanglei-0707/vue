@@ -31,7 +31,8 @@ npm run build
 # vue-router
 * 配置路由
 
-    ``` javascript
+    ```
+    javascript
     // main.js中配置路由
     import VueRouter from 'vue-router'
     Vue.use(VueRouter)
@@ -62,13 +63,15 @@ npm run build
 # vue2.0
 * 列表循环：
 
-    ``` javascript
+    ```
+    javascript
     //在文本中使用使用{{}}插值法，在元素属性中使用时，用v-bind
     <li v-for="(item, index) in list" :id="'li' + index">{{item}}</li>
     ```
 
 * modal遮罩层组件，表示是否显示遮罩层的modalShow布尔值变量在父组件中设置和控制，modal中显示的文字message在子组件中使用props从父组件中传过来，确定和取消按钮的点击事件使用自定义从父组件传到
-    ``` javascript
+    ```
+    javascript
     //使用Modal组件
     <Modal v-if="modalShow" message="确定删除问卷？" @confirm-event="confirmHandler" @hide-event="modalShow = false"></Modal>
     //Modal组件中
@@ -84,7 +87,8 @@ npm run build
     ```
 
 * 有个问题尚需解决，在实现全选和反选时发现input的click事件比v-model晚一步，比如说一组复选框如下：
-    ``` javascript
+    ```
+    javascript
     <div id="app">
         <input type="checkbox" id="jack" value="Jack" @click="checkbox" v-model="checkedNames">
         <label for="jack">Jack</label>
