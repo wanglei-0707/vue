@@ -1,17 +1,18 @@
 <template>
     <div>
-        <header class="note-detail-header">
+        <header v-if="folder" class="note-detail-header">
             <i class="iconfont icon icon-jiantou-copy left-icon" @click="goback"></i>
-            <h1 class="note-detail-header-title">文件夹：/{{ foldername }}/</h1>
+            <h1 class="note-detail-header-title">文件夹：{{ folder[2] }}</h1>
             <div class="note-header-icons">
                 <i class="iconfont icon icon-sousuo"></i>
                 <i class="iconfont icon icon-share"></i>
             <div>
         </header>
+        <div v-if="folder" class="fillfixed"></div>
         <div class="note-detail-remind">
             今日提醒0
         </div>
-        <div class="note-detail-content">
+        <div class="note-notelist-content">
             <div v-for="notesSameMonth in notes">
                 <div class="note-notelist-time">
                     {{ notesSameMonth.time }}
@@ -36,54 +37,73 @@ export default {
     }
   },
   computed: {
-    foldername: function () {
-      return this.$route.params.foldername.split('-')[0]
+    folder: function () {
+      if (this.$route.name === 'recently') {
+        return false
+      }
+      let params = this.$route.params.foldername
+      let index1 = +params.split('-')[1]
+      let index2 = +params.split('-')[2]
+      return this.$store.state.folders[index1][index2]
     },
     notes: function () {
-      let parentFolderName = this.$route.params.foldername.split('-')[0]
-      let index = this.$route.params.foldername.split('-')[1]
-      let rootFolder = this.$store.state.noteList[index]
-      let notes = []
-      if (rootFolder.childFolder) {
-        rootFolder.childFolder.forEach(childFolder => {
-          if (childFolder.childFolder) {
-            childFolder.childFolder.forEach(folder => {
-              folder.notes.forEach(note => {
-                note.path = '/' + parentFolderName + '/' + childFolder.name + '/' + folder.name + '/'
-              })
-              Array.prototype.push.apply(notes, folder.notes)
-            })
-          } else {
-            childFolder.notes.forEach(note => {
-              note.path = '/' + parentFolderName + '/' + childFolder.name + '/'
-            })
-            Array.prototype.push.apply(notes, childFolder.notes)
+      var folders = this.$store.state.folders
+      var notes = this.$store.state.notes
+      var noteArr = []
+      var ret = {}
+      if (this.$route.name === 'recently') {
+        for (let key in notes) {
+          if (notes.hasOwnProperty(key)) {
+            noteArr = noteArr.concat(notes[key])
           }
-        })
+        }
       } else {
-        rootFolder.notes.forEach(note => {
-          note.path = '/' + parentFolderName + '/'
-        })
-        notes = rootFolder.notes
-      }
-      let notesObj = {}
-      let notesOrderByTime = []
-      // 对笔记重新排序，将同一天创建的笔记放在一起，按照时间排序
-      for (let i = 0, j = 0; i < notes.length; i++) {
-        let cur = notes[i]
-        let time = cur.time.slice(0, 7)
-        if (notesObj[time] !== undefined) {
-          notesOrderByTime[notesObj[time]].notes.push(cur)
-        } else {
-          notesObj[time] = j++
-          notesOrderByTime.push({time: time, notes: [cur]})
+        var index = +this.$route.params.foldername.split('-')[1]
+        if (notes[this.folder[1]]) {
+          noteArr = noteArr.concat(notes[this.folder[1]])
+        }
+        if (this.folder[0]) {
+          for (var i = 0; i < folders[index + 1].length; i++) {
+            var cur = folders[index + 1][i]
+            if (cur[1].split('.').slice(0, -1).join('.') === this.folder[1]) {
+              if (notes[cur[1]]) {
+                noteArr = noteArr.concat(notes[cur[1]])
+              }
+              if (cur[0]) {
+                for (var j = 0; j < folders[index + 2].length; j++) {
+                  var temp = folders[index + 2][j]
+                  if (temp[1].split('.').slice(0, -1).join('.') === cur[1]) {
+                    if (notes[temp[1]]) {
+                      noteArr = noteArr.concat(notes[temp[1]])
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
-      notesOrderByTime.sort(this.compareByTime)
-      notesOrderByTime.forEach(item => {
-        item.notes.sort(this.compareByTime)
+      noteArr.sort(function (a, b) {
+        return a.time > b.time ? -1 : 1
       })
-      return notesOrderByTime
+      for (let k = 0, p = 0; k < noteArr.length; k++) {
+        var note = noteArr[k]
+        if (!ret[p]) {
+          ret[p] = {}
+          ret[p].time = note.time.slice(0, 7)
+          ret[p].notes = [note]
+        } else {
+          if (note.time.slice(0, 7) === ret[p].time) {
+            ret[p].notes.push(note)
+          } else {
+            p++
+            ret[p] = {}
+            ret[p].time = note.time.slice(0, 7)
+            ret[p].notes = [note]
+          }
+        }
+      }
+      return ret
     }
   },
   ready: function () {},
@@ -92,14 +112,8 @@ export default {
     goback: function () {
       this.$router.go(-1)
     },
-    compareByTime: function (a, b) {
-      let time1 = a.time
-      let time2 = b.time
-      return time1 < time2 ? 1 : -1
-    },
     openNote: function (note) {
-      let path = note.path.split('/').slice(1, -1).join('-') + '-' + note.id
-      this.$router.push({name: 'notedetail', params: {notepath: path}})
+      this.$router.push({name: 'notedetail', params: {id: note.id}})
     }
   },
   components: {}
@@ -107,14 +121,6 @@ export default {
 </script>
 
 <style>
-.note-detail-header{
-    width:100%;
-    height:70px;
-    padding:20px;
-    box-sizing: border-box;
-    background:#2277BF;
-    color:#fff;
-}
 .icon-share{
     float:right;
     -webkit-transform: rotate(90deg);
@@ -131,7 +137,11 @@ export default {
     font-size: 1.4em;
     text-align: center;
 }
-.note-detail-content{
+.fillfixed{
+    width:100%;
+    height:63px;
+}
+.note-notelist-content{
     padding:10px 0;
     line-height: 1.5em;
 }
@@ -142,6 +152,9 @@ export default {
 }
 .note-notelist-note{
     padding:15px 20px 40px 20px;
+}
+.note-notelist-note:not(:last-child){
+    border-bottom: 1px solid #ccc;
 }
 .note-notelist-note-time, .note-notelist-note-path{
     font-size: .6em;

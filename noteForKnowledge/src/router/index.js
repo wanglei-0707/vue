@@ -27,16 +27,21 @@ export default new Router({
         {
           path: '',
           component: FolderList
+        },
+        {
+          path: '/recently',
+          name: 'recently',
+          component: NoteList
         }
       ]
     },
     {
-      path: '/notedetail/:notepath',
+      path: '/notedetail/:id',
       name: 'notedetail',
       component: NoteDetail
     },
     {
-      path: '/notelist/:foldername',
+      path: '/:foldername',
       name: 'notelist',
       component: NoteList
     }

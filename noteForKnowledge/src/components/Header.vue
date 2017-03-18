@@ -34,12 +34,14 @@ export default {
     box-sizing: border-box;
     background:#2277BF;
     color:#fff;
+    position: fixed;
+    z-index: 100;
 }
 .icon{
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 .left-icon{
-    margin-right:1rem;
+    margin-right:.6rem;
 }
 .note-header-title{
     font-size: 1.6rem;
@@ -50,10 +52,12 @@ export default {
 .note-header-icons{
     height:30px;
     line-height: 30px;
-    float:right;
+    display: inline-block;
+    position: absolute;
+    right:10px;
 }
 .note-header-icons .iconfont:not(:last-child){
-    margin-right:.8rem;
+    margin-right:.6rem;
 }
 
 </style>

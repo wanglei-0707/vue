@@ -22,45 +22,18 @@ export default {
   },
   computed: {
     note: function () {
-      let notepath = this.$route.params.notepath
-      let pathArr = notepath.split('-').slice(0, -1)
-    //   let noteid = +notepath.split('-').slice(-1)[0]
-      let noteList = this.$store.state.noteList
-      console.log(pathArr)
-      for (let i = 0; i < noteList.length; i++) {
-        if (noteList[i].name === pathArr[0]) {
-          console.log('111:' + noteList[i].name)
-          if (pathArr[1]) {
-            noteList = noteList[i].childFolder
-            for (let j = 0; j < noteList.length; j++) {
-              if (noteList[j].name === pathArr[1]) {
-                console.log('2222:' + noteList[i].name)
-                if (pathArr[2]) {
-                  noteList = noteList[j].childFolder
-                  for (let k = 0; k < noteList.length; k++) {
-                    if (noteList[k].name === pathArr[2]) {
-                      noteList = noteList[k].notes
-                      break
-                    }
-                  }
-                } else {
-                  noteList = noteList[j].notes
-                }
-              }
+      let noteid = +this.$route.params.id
+      let notes = this.$store.state.notes
+      for (let key in notes) {
+        if (notes.hasOwnProperty(key)) {
+          let noteArr = notes[key]
+          for (let i = 0; i < noteArr.length; i++) {
+            if (noteArr[i].id === noteid) {
+              return noteArr[i]
             }
-          } else {
-            noteList = noteList[i].notes
           }
         }
       }
-      console.log(noteList)
-      console.log(notepath)
-    //   for (let i = 0; i < noteList.length; i++) {
-    //     if (noteList[i].id === noteid) {
-    //       return noteList[i]
-    //     }
-    //   }
-    //   return noteList
     }
   },
   ready: function () {},
@@ -77,11 +50,13 @@ export default {
 <style>
 .note-detail-header{
     width:100%;
-    height:70px;
-    padding:20px;
+    /*height:60px;*/
+    padding:20px 15px;
     box-sizing: border-box;
     background:#2277BF;
     color:#fff;
+    position: fixed;
+    z-index: 100;
 }
 .note-detail-header-title{
     display: inline-block;
@@ -94,16 +69,18 @@ export default {
 }
 .note-detail-title{
     width:100%;
-    height:60px;
-    line-height: 60px;
-    padding-left:20px;
+    padding:15px 20px;
     box-sizing: border-box;
     color:#000;
     background:#ccc;
-    font-size: 1.4em;
+    font-size: 1.2em;
+    position: relative;
+    top:63px;
 }
 .note-detail-content{
     padding:10px 20px;
     line-height: 1.5em;
+    position: relative;
+    top:63px;
 }
 </style>

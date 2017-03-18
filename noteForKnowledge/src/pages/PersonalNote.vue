@@ -2,6 +2,7 @@
     <div>
         <note-header></note-header>
         <navbar></navbar>
+        <div class="fill"></div>
         <router-view></router-view>
         <add></add>
     </div>
@@ -30,4 +31,8 @@ export default {
 </script>
 
 <style lang="css">
+.fill{
+    width:100%;
+    height:135px;
+}
 </style>

@@ -1,9 +1,9 @@
 <template>
   <nav>
     <ul class="note-navbar">
-      <li class="note-navbtn">近期</li>
-      <li class="note-navbtn">文件夹</li>
-      <li class="note-navbtn">标签</li>
+      <li class="note-navbtn"><router-link :to="{name: 'recently'}" class="home-link">近期</router-link></li>
+      <li class="note-navbtn"><router-link to="/" class="home-link">文件夹</router-link></li>
+      <li class="note-navbtn"><router-link to="/" class="home-link">标签</router-link></li>
     </ul>
   </nav>
 </template>
@@ -26,6 +26,10 @@ export default {
   .note-navbar{
       font-size: 0;
       overflow: hidden;
+      width:100%;
+      position: fixed;
+      top:70px;
+      z-index: 100;
   }
   .note-navbtn{
       float:left;
@@ -42,5 +46,9 @@ export default {
   }
   .note-navbtn:hover{
       border-bottom:4px solid #EAA710;
+  }
+  .home-link{
+      color:#E6E6E6;
+      text-decoration: none;
   }
 </style>
