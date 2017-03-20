@@ -5,7 +5,7 @@
                 <a href="#" :class="{'active': cur === 1}" @click="changePage('minus')">上一页</a>
             </li>
             <li class="page-item" v-if="cur>3">
-                <a href="#" :class="{'active': cur === index}" @click="changePage(1)">1</a>
+                <a href="#" :class="{'active': cur === 1}" @click="changePage(1)">1</a>
             </li>
             <li class="page-item" v-if="cur>3"><a href="">...</a></li>
             <li v-for="index in indexs" class="page-item">
@@ -13,7 +13,7 @@
             </li>
             <li class="page-item" v-if="cur<(indexCount-1)"><a href="#">...</a></li>
             <li class="page-item" v-if="cur<(indexCount-1)">
-                <a href="#" :class="{'active': cur === index}" @click="changePage(indexCount)">{{ indexCount }}</a>
+                <a href="#" :class="{'active': cur === indexCount}" @click="changePage(indexCount)">{{ indexCount }}</a>
             </li>
             <li class="page-item">
                 <a href="#" :class="{'active': cur === indexCount}" @click="changePage('plus')" >下一页</a>
