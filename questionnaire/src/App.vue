@@ -25,7 +25,7 @@ export default {
         font-family:"微软雅黑";
     }
     .content{
-        width:80%;
+        width:70%;
         min-height:200px;
         margin:200px auto;
         padding:30px;

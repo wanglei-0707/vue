@@ -1,41 +1,44 @@
 <template>
-    <table v-if="questionnaireList.length !== 0">
-        <thead>
-            <tr>
-                <th class="checkbox-td"></th>
-                <th>标题</th>
-                <th>时间</th>
-                <th>状态</th>
-                <th>
-                    操作
-                    <router-link to="/new" class="new-questionnaire-btn link">+ 新建问卷</router-link>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="(item, index) in questionnaireList">
-                <td class="checkbox-td">
-                    <input type="checkbox" :value="item.id" v-model="checkedList" @click="checkOne(item.id)" v-show="item.status === '未发布' ? true : false">
-                </td>
-                <td>{{item.title}}</td>
-                <td>{{item.time}}</td>
-                <td :class="{inpublish:item.status === '发布中', finished: item.status === '已结束'}">{{item.status}}</td>
-                <td>
-                    <router-link :to="{name: 'edit', params: {id: item.id}}" class="operators-btn" v-show="item.status === '未发布'">编辑</router-link>
-                    <a class="operators-btn" v-show="item.status === '未发布'" @click="deleteShowMask(item)">删除</a>
-                    <router-link :to="{name: 'view', params: {id: item.id}}" class="operators-btn">查看问卷</router-link>
-                    <router-link :to="{name: 'check', params: {id: item.id}}" class="operators-btn" v-show="item.status !== '未发布'">查看数据</router-link>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="checkbox" @click="checkAll" v-model="checkboxAll">全选
-                    <button class="deletechecked" @click="deleteChecked">删除</button>
-                </td>
-            </tr>
-        </tbody>
+    <div v-if="questionnaireList.length !== 0" class="list-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th class="checkbox-td"></th>
+                    <th class="td-title">标题</th>
+                    <th class="td-time">时间</th>
+                    <th class="td-status">状态</th>
+                    <th class="td-operators">
+                        操作
+                        <router-link to="/new" class="new-questionnaire-btn link">+ 新建问卷</router-link>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in questionnaireList">
+                    <td class="checkbox-td">
+                        <input type="checkbox" :value="item.id" v-model="checkedList" @click="checkOne(item.id)" v-show="item.status === '未发布' ? true : false">
+                    </td>
+                    <td class="td-title">{{item.title}}</td>
+                    <td class="td-time">{{item.time}}</td>
+                    <td class="td-status" :class="{inpublish:item.status === '发布中', finished: item.status === '已结束'}">{{item.status}}</td>
+                    <td class="td-operators">
+                        <router-link :to="{name: 'edit', params: {id: item.id}}" class="operators-btn" v-show="item.status === '未发布'">编辑</router-link>
+                        <a class="operators-btn" v-show="item.status === '未发布'" @click="deleteShowMask(item)">删除</a>
+                        <router-link :to="{name: 'view', params: {id: item.id}}" class="operators-btn">查看问卷</router-link>
+                        <router-link :to="{name: 'check', params: {id: item.id}}" class="operators-btn" v-show="item.status !== '未发布'">查看数据</router-link>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="checkbox" @click="checkAll" v-model="checkboxAll">全选
+                        <button class="deletechecked" @click="deleteChecked">删除</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <Pagination :indexCount="indexCount" @change-page="changePage"></Pagination>
         <MaskLayer v-if="maskShow" message="确定删除问卷？" @confirm-event="deleteQuestionnaire(delQuestionnaire)" @hide-event="maskShow = false"></MaskLayer>
-    </table>
+    </div>
     <div v-else>
         <router-link to="/new" class="newnaire-btn">+ 新建问卷</router-link>
     </div>
@@ -43,6 +46,8 @@
 
 <script>
     import MaskLayer from './Mask'
+    import Pagination from './Pagination'
+
     export default {
         name: 'List',
         data () {
@@ -50,12 +55,16 @@
                 maskShow: false,
                 delQuestionnair: {},
                 checkedList: [],
-                checkboxAll: false
+                checkboxAll: false,
+                pageCount: 2,
+                curPage: 0
             }
         },
         computed: {
             questionnaireList () {
-                return this.$store.state.questionnaireList
+                let start = this.curPage * this.pageCount
+                let end = start + this.pageCount
+                return this.$store.state.questionnaireList.slice(start, end)
             },
             unpublished () {
                 var result = []
@@ -65,10 +74,14 @@
                     }
                 }
                 return result
+            },
+            indexCount () {
+                return Math.ceil(this.$store.state.questionnaireList.length / this.pageCount)
             }
         },
         components: {
-            MaskLayer
+            MaskLayer,
+            Pagination
         },
         methods: {
             checkOne (id) {
@@ -105,7 +118,6 @@
                 this.maskShow = false
             },
             hide () {
-                console.log('ddddd')
                 this.maskShow = false
             },
             deleteChecked () {
@@ -117,6 +129,9 @@
                         this.checkboxAll = false
                     }
                 }
+            },
+            changePage (newPage) {
+                this.curPage = newPage
             }
         }
     }
@@ -136,7 +151,7 @@
         text-decoration: none;
         /*margin:100px auto;*/
     }
-    table,thead,tbody,tr{
+    .list-wrapper, table,thead,tbody,tr{
         width:100%;
     }
     th{
@@ -148,6 +163,15 @@
         height:40px;
         vertical-align: middle;
         color:#000;
+    }
+    .td-title{
+        width:30%;
+    }
+    .td-time{
+        width:15%;
+    }
+    .td-status{
+        width:15%;
     }
     td.inpublish{
         color:#00ff00;
